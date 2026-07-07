@@ -51,6 +51,23 @@ const STATE = {
   DRAFT:   "draft",
 };
 
+// ── Top Upstream Contributions ─────────────────────────────
+// List PR numbers here, in the order you want them ranked #1, #2, ...
+// No need to touch individual PR entries below.
+const TOP_PR_NUMBERS = [
+  35316,
+  36927,
+  4927,
+  23264,
+  8518,
+  12049,
+  14068,
+  16426,
+  29244,
+  4951,
+  18445,
+];
+
 
 // ============================================================
 // PULL REQUESTS
@@ -346,7 +363,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/36927",
     title: "[ROCm][Quantization] add fp8xfp8 attn support for rocm_aiter_unified_attn",
     state: STATE.MERGED,
-    highlight: 7,
     category: CAT.QUANT,
     date: "2026-03-12",
     mergedDate: "2026-03-18",
@@ -360,7 +376,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/35316",
     title: "[ROCm][Quantization] add quark w4a8 mxfp4_fp8 for LinearLayer",
     state: STATE.MERGED,
-    highlight: 6,
     category: CAT.QUANT,
     date: "2026-02-25",
     mergedDate: "2026-03-13",
@@ -569,7 +584,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/23264",
     title: "[ROCm][Aiter] Add triton fp8 bmm kernel for mla",
     state: STATE.MERGED,
-    highlight: 8,
     category: CAT.KERNEL,
     date: "2025-08-20",
     mergedDate: "2025-08-28",
@@ -583,7 +597,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/18445",
     title: "[V1] fix torch profiling for V1 offline scenarios",
     state: STATE.MERGED,
-    highlight: 10,
     category: CAT.BUGFIX,
     date: "2025-05-21",
     mergedDate: "2025-05-28",
@@ -610,7 +623,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/16426",
     title: "[rocm][V0] fix selection logic for custom PA in V0",
     state: STATE.MERGED,
-    highlight: 1,
     category: CAT.BUGFIX,
     date: "2025-04-10",
     mergedDate: "2025-04-17",
@@ -625,7 +637,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/14068",
     title: "[core] moe fp8 block quant tuning support",
     state: STATE.MERGED,
-    highlight: 5,
     category: CAT.MOE,
     date: "2025-03-01",
     mergedDate: "2025-03-04",
@@ -717,7 +728,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/12049",
     title: "[ROCm][MoE] moe tuning support for rocm",
     state: STATE.MERGED,
-    highlight: 2,
     category: CAT.MOE,
     date: "2025-01-14",
     mergedDate: "2025-01-17",
@@ -770,7 +780,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/8518",
     title: "[dbrx] refactor dbrx experts to extend FusedMoe class",
     state: STATE.MERGED,
-    highlight: 9,
     category: CAT.MODEL,
     date: "2024-09-16",
     mergedDate: "2024-09-21",
@@ -797,7 +806,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/4951",
     title: "[Kernel][ROCm][AMD] Add fused_moe Triton configs for MI300X",
     state: STATE.MERGED,
-    highlight: 3,
     category: CAT.MOE,
     date: "2024-05-21",
     mergedDate: "2024-05-28",
@@ -811,7 +819,6 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/4927",
     title: "[Kernel][ROCm][AMD] enable fused topk_softmax kernel for moe layer",
     state: STATE.MERGED,
-    highlight: 4,
     category: CAT.KERNEL,
     date: "2024-05-20",
     mergedDate: "2024-06-02",
@@ -1644,7 +1651,7 @@ const INTERNAL_WORK = [
   {
     id: "int-pd-disagg-rocm",
     year: 2026,
-    month: 6,
+    month: 4,
     title: "Disaggregated Prefill-Decode — Single-Node Setup & Testing on ROCm",
     category: CAT.ANALYSIS,
     description: "Set up and tested a single-node disaggregated prefill-decode (P/D) serving configuration for vLLM on ROCm, validating the split-phase architecture end-to-end on AMD GPUs.",
@@ -1655,7 +1662,7 @@ const INTERNAL_WORK = [
   {
     id: "int-ci-overhaul-rocm-2026",
     year: 2026,
-    month: 7,
+    month: 5,
     title: "vLLM CI Overhaul — Fixing Failing ROCm Test Groups (Ongoing)",
     category: CAT.INFRA,
     description: "Ongoing effort to investigate and fix failing vLLM CI tests on ROCm, prioritizing high-value test groups and bringing them to green on AMD hardware.",
@@ -1694,17 +1701,18 @@ const PR_CATEGORY_MANUAL_ORDER = {
     "vllm-13577", "vllm-12408", "vllm-5932",
   ],
   [CAT.BUGFIX]: [
-    "vllm-16426", "vllm-29244", "vllm-37606", "vllm-29439", "vllm-29926", 
-    "vllm-18445", "xgrammar-476", "vllm-45072", "vllm-32727", "vllm-32783",
-    "vllm-13438", "vllm-12273",
+    "vllm-16426", "vllm-29244", "vllm-29439", "vllm-37606", "vllm-29926", 
+    "vllm-18445", "xgrammar-476", "vllm-13438", "vllm-45072", "vllm-32727", "vllm-32783",
+    "vllm-12273",
   ],
   [CAT.INFRA]: [
+    "vllm-46658",
     // systemic infra work / broad reliability or capability gains
     "aiter-1124", "vllm-11813", "vllm-8971", "vllm-32787", "vllm-42104", "vllm-45869",
     // test-suite coverage & mechanism improvements
     "vllm-32040", "vllm-29344", "vllm-34977", "vllm-44436", "aiter-1147",
     // one-off CI test fixes, newest first
-    "vllm-46758", "vllm-46658", "vllm-46409", "vllm-46729", "vllm-46410",
+    "vllm-46758", "vllm-46409", "vllm-46729", "vllm-46410",
     "vllm-45970", "vllm-45858", "vllm-45302", "vllm-43236", "vllm-31993",
     "vllm-31192", "vllm-30911", "vllm-29827", "vllm-29243", "vllm-29123",
   ],

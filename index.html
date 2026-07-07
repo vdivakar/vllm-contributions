@@ -298,10 +298,6 @@ a:hover { text-decoration: underline; }
   <div id="charts-section">
     <div class="charts-row">
       <div class="chart-card">
-        <div class="chart-title">PRs by Category</div>
-        <div class="chart-wrap"><canvas id="chart-cat"></canvas></div>
-      </div>
-      <div class="chart-card">
         <div class="chart-title">PRs by Repository</div>
         <div class="chart-wrap"><canvas id="chart-repo"></canvas></div>
       </div>
@@ -416,7 +412,7 @@ function prCard(p, opts = {}) {
   const date   = p.mergedDate ? `Merged ${p.mergedDate}` : `Opened ${p.date}`;
   return `
     <div class="card ${opts.highlight ? "highlight-card" : ""}">
-      ${opts.highlight ? `<div class="highlight-rank">#${p.highlight}</div>` : ""}
+      ${opts.highlight ? `<div class="highlight-rank">#${opts.rank}</div>` : ""}
       <div class="card-head">
         <div class="card-title"><a href="${p.url}" target="_blank">#${p.number} ${p.title}</a></div>
         <div class="dot ${dotCls}" title="${p.state}"></div>
@@ -456,7 +452,9 @@ function prCompactRow(p) {
 
 // ── Top Contributions (highlight reel) ─────────────────────
 (function buildHighlights() {
-  const highlighted = VISIBLE_PRS.filter(p => p.highlight).sort((a,b) => a.highlight - b.highlight);
+  const highlighted = TOP_PR_NUMBERS
+    .map(n => VISIBLE_PRS.find(p => p.number === n))
+    .filter(Boolean);
   if (highlighted.length === 0) return;
   document.getElementById("highlights-section").innerHTML = `
     <div class="section-meta">
@@ -464,27 +462,12 @@ function prCompactRow(p) {
       <span class="section-count">${highlighted.length} highlighted</span>
     </div>
     <div class="highlights-wrap">
-      ${highlighted.map(p => prCard(p, {highlight: true})).join("")}
+      ${highlighted.map((p, i) => prCard(p, {highlight: true, rank: i + 1})).join("")}
     </div>
   `;
 })();
 
 // ── Charts ────────────────────────────────────────────────
-const catCount = {};
-VISIBLE_PRS.forEach(p => { prCategories(p).forEach(c => { catCount[c] = (catCount[c]||0)+1; }); });
-const catLabels = Object.keys(catCount).sort((a,b) => catCount[b]-catCount[a]);
-new Chart(document.getElementById("chart-cat"), {
-  type: "doughnut",
-  data: {
-    labels: catLabels,
-    datasets:[{data: catLabels.map(k=>catCount[k]), backgroundColor: CHART_COLORS, borderWidth:0}]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ position:"right", labels:{ color:"#8b949e", font:{size:10}, boxWidth:10, padding:7 }}}
-  }
-});
-
 const repoCount = {};
 VISIBLE_PRS.forEach(p => { repoCount[p.repo] = (repoCount[p.repo]||0)+1; });
 const repoLabels = Object.keys(repoCount).sort((a,b) => repoCount[b]-repoCount[a]);
