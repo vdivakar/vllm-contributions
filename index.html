@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contributions Dashboard — Divakar Verma</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="contributions.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d1117;
+  --surface:   #161b22;
+  --surface2:  #21262d;
+  --border:    #30363d;
+  --accent:    #58a6ff;
+  --accent2:   #f78166;
+  --accent3:   #3fb950;
+  --accent4:   #d2a8ff;
+  --accent5:   #ffa657;
+  --text:      #e6edf3;
+  --text-muted:#8b949e;
+  --radius:    8px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Layout ─────────────────────────────────────────────── */
+.page { max-width: 1300px; margin: 0 auto; padding: 24px 20px 60px; }
+
+/* ── Hero ───────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, #161b22 0%, #1c2333 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 36px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:"";position:absolute;top:-80px;right:-80px;width:360px;height:360px;
+  background:radial-gradient(circle,rgba(88,166,255,.07) 0%,transparent 70%);pointer-events:none;
+}
+.hero-name   { font-size: 26px; font-weight: 700; }
+.hero-sub    { font-size: 15px; color: var(--accent); margin-top: 3px; }
+.hero-co     { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.hero-gh     { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.hero-gh a   { color: var(--text-muted); }
+.hero-gh a:hover { color: var(--accent); }
+.hero-desc   { margin-top: 14px; font-size: 13px; color: var(--text-muted); max-width: 700px; line-height: 1.7; }
+.badge-row   { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+.badge {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing:.5px;
+  padding: 3px 10px; border-radius: 20px; border: 1px solid;
+}
+.b-blue   { color:var(--accent);  border-color:var(--accent);  background:rgba(88,166,255,.1); }
+.b-green  { color:var(--accent3); border-color:var(--accent3); background:rgba(63,185,80,.1); }
+.b-orange { color:var(--accent5); border-color:var(--accent5); background:rgba(255,166,87,.1); }
+.b-purple { color:var(--accent4); border-color:var(--accent4); background:rgba(210,168,255,.1); }
+
+/* ── Stat cards ─────────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; text-align: center;
+}
+.stat-value { font-size: 26px; font-weight: 700; color: var(--accent); }
+.stat-value.g { color: var(--accent3); }
+.stat-value.p { color: var(--accent4); }
+.stat-value.o { color: var(--accent5); }
+.stat-value.r { color: var(--accent2); }
+.stat-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing:.5px; }
+
+/* ── Tab bar ─────────────────────────────────────────────── */
+.tab-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  margin-bottom: 20px; overflow-x: auto;
+}
+.tab {
+  padding: 10px 20px; font-size: 13px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+  white-space: nowrap; transition: color .15s, border-color .15s;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-count {
+  display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 10px;
+  background: var(--surface2); color: var(--text-muted); margin-left: 6px;
+}
+
+/* ── Charts row ─────────────────────────────────────────── */
+.charts-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;
+}
+@media (max-width: 640px) { .charts-row { grid-template-columns: 1fr; } }
+.chart-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.chart-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+.chart-wrap  { position: relative; height: 200px; }
+
+/* ── Highlights ─────────────────────────────────────────── */
+.highlights-wrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.highlight-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent5);
+  border-radius: var(--radius); padding: 14px;
+  position: relative; transition: border-color .12s, transform .1s;
+}
+.highlight-card:hover { border-color: var(--accent5); transform: translateY(-1px); }
+.highlight-rank {
+  position:absolute; top:10px; right:12px;
+  font-size: 11px; font-weight: 700; color: var(--accent5);
+}
+
+/* ── Toolbar ─────────────────────────────────────────────── */
+.toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+.search-wrap { position: relative; }
+.search-input {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 7px 12px 7px 32px;
+  font-size: 13px; color: var(--text); outline: none; width: 280px;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--text-muted); }
+.search-icon { position:absolute; left:9px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none; }
+
+.filters { display:flex; gap:6px; flex-wrap:wrap; }
+.fbtn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all .12s;
+}
+.fbtn:hover { border-color: var(--accent); color: var(--accent); }
+.fbtn.active { background: var(--accent); border-color: var(--accent); color: #0d1117; font-weight: 600; }
+
+/* ── Section title ─────────────────────────────────────────── */
+.section-meta {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom: 12px; flex-wrap:wrap; gap:8px;
+}
+.section-title { font-size: 14px; font-weight: 600; }
+.section-count { font-size: 12px; color: var(--text-muted); }
+
+/* ── PR / Card grid ─────────────────────────────────────── */
+.year-group { margin-bottom: 28px; }
+.year-label {
+  font-size: 12px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  margin-bottom: 12px; display:flex; align-items:center; gap:8px;
+}
+.year-pill {
+  font-size: 11px; padding: 1px 7px; border-radius: 10px;
+  background: var(--surface2); color: var(--text-muted); font-weight:500;
+}
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 10px;
+}
+
+/* ── Card ──────────────────────────────────────────────── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px;
+  transition: border-color .12s, transform .1s;
+}
+.card:hover { border-color: #484f58; transform: translateY(-1px); }
+.card-head  { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:6px; }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; }
+.card-title a { color: var(--text); }
+.card-title a:hover { color: var(--accent); text-decoration: none; }
+
+/* state dot */
+.dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+.dot-merged   { background: var(--accent3); }
+.dot-open     { background: var(--accent5); }
+.dot-closed   { background: var(--text-muted); }
+.dot-draft    { background: #484f58; }
+
+.card-meta  { font-size: 11px; color: var(--text-muted); margin-bottom: 7px; }
+.card-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.55; margin-bottom: 8px; }
+
+.impact-box {
+  background: var(--surface2); border-left: 3px solid var(--accent3);
+  border-radius: 0 4px 4px 0; padding: 5px 9px;
+  font-size: 11px; color: var(--accent3); margin-bottom: 8px;
+}
+.tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px; }
+.tag {
+  font-size: 11px; padding: 2px 6px; border-radius: 10px;
+  background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
+}
+.client-tag {
+  font-size: 11px; padding: 2px 7px; border-radius: 10px;
+  background: rgba(210,168,255,.1); color: var(--accent4); border: 1px solid rgba(210,168,255,.3);
+}
+.repo-tag {
+  font-size: 11px; padding: 2px 7px; border-radius: 10px;
+  background: rgba(88,166,255,.08); color: var(--accent); border: 1px solid rgba(88,166,255,.2);
+}
+
+/* ── Compact PR rows (category sections) ──────────────── */
+.pr-row-list {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.pr-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; border-bottom: 1px solid var(--border);
+}
+.pr-row:last-child { border-bottom: none; }
+.pr-row:hover { background: var(--surface2); }
+.pr-row-title {
+  flex: 1; min-width: 0; font-size: 12.5px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pr-row-title a { color: var(--text); }
+.pr-row-title a:hover { color: var(--accent); }
+.pr-row-impact { color: var(--accent3); font-weight: 500; }
+.pr-row-meta {
+  font-size: 11px; color: var(--text-muted); white-space: nowrap;
+  flex-shrink: 0; display: flex; gap: 8px; align-items: center;
+}
+.pr-row-tags { display: flex; gap: 4px; flex-shrink: 0; }
+
+/* ── Review cards ──────────────────────────────────────── */
+.review-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+  display:flex; align-items:center; gap:12px;
+}
+.review-icon { font-size:16px; flex-shrink:0; }
+.review-body { flex:1; min-width:0; }
+.review-title { font-size: 13px; color: var(--text); font-weight: 500; }
+.review-title a { color: var(--text); }
+.review-title a:hover { color: var(--accent); }
+.review-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.review-list { display:flex; flex-direction:column; gap:6px; }
+
+/* ── Issue list ─────────────────────────────────────────── */
+.issue-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px;
+}
+
+/* ── Hidden ─────────────────────────────────────────────── */
+.hidden { display: none !important; }
+.pane   { display: none; }
+.pane.active { display: block; }
+.empty  { text-align:center; padding:40px; color:var(--text-muted); }
+
+/* ── Legend ─────────────────────────────────────────────── */
+.legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
+.leg-item { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-muted); }
+.leg-dot  { width:8px; height:8px; border-radius:50%; }
+
+/* ── Footer ─────────────────────────────────────────────── */
+.footer { margin-top:48px; padding-top:18px; border-top:1px solid var(--border); font-size:12px; color:var(--text-muted); text-align:center; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero" id="hero"></div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <!-- Top Contributions -->
+  <div id="highlights-section"></div>
+
+  <!-- Charts (only shown on Overview tab) -->
+  <div id="charts-section">
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">PRs by Category</div>
+        <div class="chart-wrap"><canvas id="chart-cat"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">PRs by Repository</div>
+        <div class="chart-wrap"><canvas id="chart-repo"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar" id="tab-bar"></div>
+
+  <!-- Panes -->
+  <div id="pane-prs"     class="pane active"></div>
+  <div id="pane-issues"  class="pane"></div>
+  <div id="pane-reviews" class="pane"></div>
+  <div id="pane-internal" class="pane"></div>
+
+  <div class="footer">
+    Updated <span id="last-updated"></span> &nbsp;·&nbsp;
+    Add contributions in <code>contributions.js</code> and refresh.
+  </div>
+</div>
+
+<script>
+// ── Constants ─────────────────────────────────────────────
+const MONTH = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const CHART_COLORS = [
+  "#58a6ff","#3fb950","#d2a8ff","#ffa657","#f78166",
+  "#79c0ff","#56d364","#bc8cff","#ffb77c","#ff7b72","#39d353","#a5d6ff"
+];
+
+// ── Hero ──────────────────────────────────────────────────
+document.getElementById("hero").innerHTML = `
+  <div class="hero-name">${PROFILE.name}</div>
+  <div class="hero-sub">${PROFILE.title}</div>
+  <div class="hero-co">${PROFILE.company}</div>
+  <div class="hero-gh">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-1px;margin-right:4px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    <a href="${PROFILE.githubUrl}" target="_blank">github.com/${PROFILE.github}</a>
+  </div>
+  <div class="hero-desc">${PROFILE.summary}</div>
+  <div class="badge-row">
+    <span class="badge b-blue">vLLM</span>
+    <span class="badge b-orange">ROCm</span>
+    <span class="badge b-green">Triton Kernels</span>
+    <span class="badge b-purple">MoE Optimization</span>
+    <span class="badge b-blue">FP8 Quantization</span>
+    <span class="badge b-orange">AMD GPU Inference</span>
+  </div>
+`;
+
+// ── Visible PRs (exclude draft, closed, and the ROCm/vllm fork —
+//    those PRs are superseded by their upstreamed vllm-project/vllm
+//    counterparts and just duplicate the story) ─────────────
+const VISIBLE_PRS = PULL_REQUESTS.filter(p =>
+  p.state !== "draft" && p.state !== "closed" && p.repo !== REPO.VLLM_ROCM
+);
+
+// A PR can belong to multiple categories via `categories: [...]`;
+// falls back to the single `category` field for older entries.
+function prCategories(p) { return p.categories || (p.category ? [p.category] : []); }
+
+// ── Stats ─────────────────────────────────────────────────
+const upstreamMerged = VISIBLE_PRS.filter(p => p.repo === REPO.VLLM_UPSTREAM && p.state === "merged").length;
+const totalMerged    = VISIBLE_PRS.filter(p => p.state === "merged").length;
+const allClients     = [...new Set(INTERNAL_WORK.flatMap(w => w.clients||[]))].filter(Boolean);
+const visibleRepos   = [...new Set(VISIBLE_PRS.map(p => p.repo))];
+const hasRank        = typeof CONTRIBUTOR_RANK !== "undefined";
+
+document.getElementById("stats-grid").innerHTML = `
+  <div class="stat-card"><div class="stat-value">${VISIBLE_PRS.length}</div><div class="stat-label">Pull Requests</div></div>
+  <div class="stat-card"><div class="stat-value g">${totalMerged}</div><div class="stat-label">PRs Merged</div></div>
+  <div class="stat-card"><div class="stat-value">${upstreamMerged}</div><div class="stat-label">Upstream (vllm-project)</div></div>
+  ${hasRank ? `<div class="stat-card"><div class="stat-value p">#${CONTRIBUTOR_RANK.rank}</div><div class="stat-label">vLLM Rank (of ${CONTRIBUTOR_RANK.totalContributors})</div></div>` : ""}
+  <div class="stat-card"><div class="stat-value p">${REVIEWS.length}</div><div class="stat-label">PR Reviews</div></div>
+  <div class="stat-card"><div class="stat-value o">${ISSUES.length}</div><div class="stat-label">Issues Filed</div></div>
+  <div class="stat-card"><div class="stat-value r">${allClients.length}</div><div class="stat-label">Clients Served</div></div>
+  <div class="stat-card"><div class="stat-value">${visibleRepos.length}</div><div class="stat-label">Repositories</div></div>
+  <div class="stat-card"><div class="stat-value g">30×</div><div class="stat-label">CI Speedup</div></div>
+`;
+
+// ── PR importance ordering ─────────────────────────────────
+// Automatic fallback score for PRs with no manual ranking: rewards a
+// stated quantified impact, a substantive description, upstream repo,
+// and merged state. Used as-is for Bug Fixes / Infra, and as the
+// tail-end fallback for categories with a PR_CATEGORY_MANUAL_ORDER list.
+function prHeuristicScore(p) {
+  let score = 0;
+  if (p.impact) score += 5;
+  score += Math.min((p.description || "").length / 40, 3);
+  if (p.repo === REPO.VLLM_UPSTREAM) score += 2;
+  if (p.state === "merged") score += 1;
+  score += (p.tags || []).length * 0.2;
+  return score;
+}
+
+function primaryCategory(p) { return prCategories(p)[0] || "Uncategorized"; }
+
+function comparePRsByImportance(a, b, cat) {
+  const manual = (typeof PR_CATEGORY_MANUAL_ORDER !== "undefined") ? PR_CATEGORY_MANUAL_ORDER[cat] : null;
+  const ai = manual ? manual.indexOf(a.id) : -1;
+  const bi = manual ? manual.indexOf(b.id) : -1;
+  if (ai !== -1 && bi !== -1) return ai - bi;
+  if (ai !== -1) return -1;
+  if (bi !== -1) return 1;
+  const diff = prHeuristicScore(b) - prHeuristicScore(a);
+  if (Math.abs(diff) > 0.001) return diff;
+  return new Date(b.mergedDate || b.date) - new Date(a.mergedDate || a.date);
+}
+
+// ── Shared PR card renderer ─────────────────────────────────
+function prCard(p, opts = {}) {
+  const dotCls = `dot-${p.state}`;
+  const date   = p.mergedDate ? `Merged ${p.mergedDate}` : `Opened ${p.date}`;
+  return `
+    <div class="card ${opts.highlight ? "highlight-card" : ""}">
+      ${opts.highlight ? `<div class="highlight-rank">#${p.highlight}</div>` : ""}
+      <div class="card-head">
+        <div class="card-title"><a href="${p.url}" target="_blank">#${p.number} ${p.title}</a></div>
+        <div class="dot ${dotCls}" title="${p.state}"></div>
+      </div>
+      <div class="card-meta">
+        <span class="repo-tag">${p.repo}</span>
+        &nbsp;·&nbsp;${date}
+      </div>
+      ${p.description ? `<div class="card-desc">${p.description}</div>` : ""}
+      ${p.impact ? `<div class="impact-box">${p.impact}</div>` : ""}
+      <div class="tags">
+        ${(p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join("")}
+        ${prCategories(p).map(c=>`<span class="tag" style="color:var(--accent4);border-color:rgba(210,168,255,.3)">${c}</span>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function prCompactRow(p) {
+  const dotCls = `dot-${p.state}`;
+  const date   = p.mergedDate ? p.mergedDate : p.date;
+  return `
+    <div class="pr-row">
+      <div class="dot ${dotCls}" title="${p.state}"></div>
+      <div class="pr-row-title">
+        <a href="${p.url}" target="_blank">#${p.number} ${p.title}</a>
+        ${p.impact ? `&nbsp;·&nbsp;<span class="pr-row-impact">${p.impact}</span>` : ""}
+      </div>
+      <div class="pr-row-tags">${(p.tags||[]).slice(0,2).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="pr-row-meta">
+        <span class="repo-tag">${p.repo}</span>
+        <span>${date}</span>
+      </div>
+    </div>
+  `;
+}
+
+// ── Top Contributions (highlight reel) ─────────────────────
+(function buildHighlights() {
+  const highlighted = VISIBLE_PRS.filter(p => p.highlight).sort((a,b) => a.highlight - b.highlight);
+  if (highlighted.length === 0) return;
+  document.getElementById("highlights-section").innerHTML = `
+    <div class="section-meta">
+      <span class="section-title">⭐ Top Upstream Contributions</span>
+      <span class="section-count">${highlighted.length} highlighted</span>
+    </div>
+    <div class="highlights-wrap">
+      ${highlighted.map(p => prCard(p, {highlight: true})).join("")}
+    </div>
+  `;
+})();
+
+// ── Charts ────────────────────────────────────────────────
+const catCount = {};
+VISIBLE_PRS.forEach(p => { prCategories(p).forEach(c => { catCount[c] = (catCount[c]||0)+1; }); });
+const catLabels = Object.keys(catCount).sort((a,b) => catCount[b]-catCount[a]);
+new Chart(document.getElementById("chart-cat"), {
+  type: "doughnut",
+  data: {
+    labels: catLabels,
+    datasets:[{data: catLabels.map(k=>catCount[k]), backgroundColor: CHART_COLORS, borderWidth:0}]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:"right", labels:{ color:"#8b949e", font:{size:10}, boxWidth:10, padding:7 }}}
+  }
+});
+
+const repoCount = {};
+VISIBLE_PRS.forEach(p => { repoCount[p.repo] = (repoCount[p.repo]||0)+1; });
+const repoLabels = Object.keys(repoCount).sort((a,b) => repoCount[b]-repoCount[a]);
+new Chart(document.getElementById("chart-repo"), {
+  type: "bar",
+  data:{
+    labels: repoLabels.map(r => r.replace("vllm-project/","upstream/").replace("ROCm/","ROCm/")),
+    datasets:[{ label:"PRs", data: repoLabels.map(k=>repoCount[k]),
+      backgroundColor: CHART_COLORS, borderRadius:5, borderWidth:0 }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false, indexAxis:"y",
+    plugins:{ legend:{display:false} },
+    scales:{
+      x:{ grid:{color:"#21262d"}, ticks:{color:"#8b949e"} },
+      y:{ grid:{color:"#21262d"}, ticks:{color:"#8b949e", font:{size:11}} }
+    }
+  }
+});
+
+// ── Tabs ──────────────────────────────────────────────────
+const TABS = [
+  { id:"prs",      label:"Pull Requests", count: VISIBLE_PRS.length },
+  { id:"issues",   label:"Issues",        count: ISSUES.length },
+  { id:"reviews",  label:"Reviews & Comments", count: REVIEWS.length + (typeof COMMENTS !== "undefined" ? COMMENTS.length : 0) },
+  { id:"internal", label:"Internal Work", count: INTERNAL_WORK.length },
+];
+let activeTab = "prs";
+
+const tabBar = document.getElementById("tab-bar");
+tabBar.innerHTML = TABS.map(t =>
+  `<div class="tab ${t.id===activeTab?"active":""}" data-tab="${t.id}">
+    ${t.label}<span class="tab-count">${t.count}</span>
+  </div>`
+).join("");
+
+tabBar.querySelectorAll(".tab").forEach(el => {
+  el.addEventListener("click", () => {
+    activeTab = el.dataset.tab;
+    tabBar.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    el.classList.add("active");
+    document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
+    document.getElementById(`pane-${activeTab}`).classList.add("active");
+    document.getElementById("charts-section").style.display = activeTab==="prs" ? "" : "none";
+  });
+});
+
+// ── PR Pane ───────────────────────────────────────────────
+(function buildPRPane() {
+  const pane = document.getElementById("pane-prs");
+
+  // State & filter
+  let stateFilter = "all";
+  let repoFilter  = "all";
+  let search      = "";
+
+  const allRepos = [...new Set(VISIBLE_PRS.map(p => p.repo))];
+  const allStates = ["all","merged","open"];
+  const sectionOrder = (typeof PR_CATEGORY_SECTION_ORDER !== "undefined") ? PR_CATEGORY_SECTION_ORDER : [];
+
+  function makeFilters() {
+    return `
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg class="search-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11"/>
+          </svg>
+          <input class="search-input" id="pr-search" type="text" placeholder="Search PRs…" value="${search}" />
+        </div>
+        <div class="filters" id="pr-state-filters">
+          ${allStates.map(s=>`<button class="fbtn ${stateFilter===s?"active":""}" data-state="${s}">${s==="all"?"All States":s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join("")}
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="filters" id="pr-repo-filters">
+          <button class="fbtn ${repoFilter==="all"?"active":""}" data-repo="all">All Repos</button>
+          ${allRepos.map(r=>`<button class="fbtn ${repoFilter===r?"active":""}" data-repo="${r}">${r}</button>`).join("")}
+        </div>
+      </div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot dot-merged"></div>Merged</div>
+        <div class="leg-item"><div class="leg-dot dot-open"></div>Open</div>
+      </div>
+    `;
+  }
+
+  function filtered() {
+    return VISIBLE_PRS.filter(p => {
+      if (stateFilter !== "all" && p.state !== stateFilter) return false;
+      if (repoFilter  !== "all" && p.repo  !== repoFilter)  return false;
+      if (search) {
+        const hay = [p.title, p.description||"", ...(p.tags||[])].join(" ").toLowerCase();
+        if (!hay.includes(search)) return false;
+      }
+      return true;
+    });
+  }
+
+  function render() {
+    const data = filtered();
+    const byCat = {};
+    data.forEach(p => {
+      const cat = primaryCategory(p);
+      (byCat[cat] = byCat[cat]||[]).push(p);
+    });
+    const orderedCats = [
+      ...sectionOrder.filter(c => byCat[c]),
+      ...Object.keys(byCat).filter(c => !sectionOrder.includes(c)),
+    ];
+
+    const listHTML = data.length === 0
+      ? `<div class="empty">No pull requests match the filters.</div>`
+      : orderedCats.map(cat => {
+          const items = byCat[cat].sort((a,b) => comparePRsByImportance(a,b,cat));
+          return `
+            <div class="year-group">
+              <div class="year-label">${cat} <span class="year-pill">${items.length}</span></div>
+              <div class="pr-row-list">${items.map(prCompactRow).join("")}</div>
+            </div>`;
+        }).join("");
+
+    pane.innerHTML = `
+      ${makeFilters()}
+      <div class="section-meta">
+        <span class="section-title">Pull Requests</span>
+        <span class="section-count">${data.length} of ${VISIBLE_PRS.length}</span>
+      </div>
+      ${listHTML}
+    `;
+    bindPREvents();
+  }
+
+  function bindPREvents() {
+    pane.querySelector("#pr-search").addEventListener("input", e => { search=e.target.value.toLowerCase(); render(); });
+    pane.querySelectorAll("[data-state]").forEach(b => b.addEventListener("click", () => { stateFilter=b.dataset.state; render(); }));
+    pane.querySelectorAll("[data-repo]").forEach(b  => b.addEventListener("click", () => { repoFilter=b.dataset.repo;   render(); }));
+    // restore search focus
+    const inp = pane.querySelector("#pr-search");
+    if (inp && search) { inp.focus(); inp.setSelectionRange(search.length,search.length); }
+  }
+
+  render();
+})();
+
+
+// ── Issues Pane ───────────────────────────────────────────
+(function buildIssuesPane() {
+  const pane = document.getElementById("pane-issues");
+  pane.innerHTML = `
+    <div class="section-meta">
+      <span class="section-title">Issues Filed</span>
+      <span class="section-count">${ISSUES.length} issues</span>
+    </div>
+    <div class="cards-grid">
+      ${ISSUES.map(issue => `
+        <div class="card issue-card">
+          <div class="card-head">
+            <div class="card-title">
+              <a href="${issue.url}" target="_blank">#${issue.number} ${issue.title}</a>
+            </div>
+            <div class="dot dot-${issue.state}" title="${issue.state}"></div>
+          </div>
+          <div class="card-meta">
+            <span class="repo-tag">${issue.repo}</span>
+            &nbsp;·&nbsp; Opened ${issue.date}
+            ${issue.closedDate ? `&nbsp;·&nbsp; Closed ${issue.closedDate}` : ""}
+          </div>
+          <div class="card-desc">${issue.description}</div>
+          <div class="tags">${(issue.tags||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+})();
+
+
+// ── Reviews Pane ─────────────────────────────────────────
+(function buildReviewsPane() {
+  const pane = document.getElementById("pane-reviews");
+
+  const REVIEW_TYPE_LABELS = {
+    "APPROVED":          { label: "Approved",          color: "var(--accent3)" },
+    "CHANGES_REQUESTED": { label: "Changes Requested",  color: "var(--accent2)" },
+    "COMMENTED":         { label: "Commented",          color: "var(--accent5)" },
+  };
+
+  function reviewCard(r) {
+    const typeInfo = r.reviewType ? REVIEW_TYPE_LABELS[r.reviewType] : null;
+    return `
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">
+            <a href="${r.url}" target="_blank">#${r.prNumber} ${r.title}</a>
+          </div>
+          ${typeInfo
+            ? `<span style="font-size:11px;font-weight:600;color:${typeInfo.color};white-space:nowrap;flex-shrink:0">${typeInfo.label}</span>`
+            : `<span style="font-size:11px;color:var(--text-muted);flex-shrink:0">Review</span>`
+          }
+        </div>
+        <div class="card-meta">
+          <span class="repo-tag">${r.repo}</span>
+          &nbsp;·&nbsp; ${r.date}
+          &nbsp;·&nbsp; PR ${r.prState.charAt(0).toUpperCase()+r.prState.slice(1)}
+        </div>
+        ${r.description ? `<div class="card-desc">${r.description}</div>` : ""}
+        ${r.impact ? `<div class="impact-box">${r.impact}</div>` : ""}
+        <div class="tags">${(r.tags||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      </div>
+    `;
+  }
+
+  function commentCard(c) {
+    return `
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">
+            <a href="${c.url}" target="_blank">${c.prTitle || (c.prNumber ? `#${c.prNumber}` : `#${c.issueNumber}`)}</a>
+          </div>
+          <span style="font-size:11px;color:var(--accent5);flex-shrink:0">Comment</span>
+        </div>
+        <div class="card-meta">
+          <span class="repo-tag">${c.repo}</span>
+          &nbsp;·&nbsp; ${c.date}
+        </div>
+        ${c.description ? `<div class="card-desc">${c.description}</div>` : ""}
+        <div class="tags">${(c.tags||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      </div>
+    `;
+  }
+
+  // Group reviews by repo
+  const byRepo = {};
+  REVIEWS.forEach(r => { (byRepo[r.repo]=byRepo[r.repo]||[]).push(r); });
+
+  const reviewsHTML = Object.entries(byRepo).map(([repo, items]) => {
+    const sorted = items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    return `
+      <div class="year-group">
+        <div class="year-label">${repo} <span class="year-pill">${sorted.length}</span></div>
+        <div class="cards-grid">${sorted.map(reviewCard).join("")}</div>
+      </div>`;
+  }).join("");
+
+  const commentsHTML = (typeof COMMENTS !== "undefined" && COMMENTS.length > 0)
+    ? `
+      <div class="section-meta" style="margin-top:28px">
+        <span class="section-title">Notable Comments</span>
+        <span class="section-count">${COMMENTS.length} comments</span>
+      </div>
+      <div class="cards-grid">${COMMENTS.map(commentCard).join("")}</div>`
+    : "";
+
+  const totalComments = (typeof COMMENTS !== "undefined") ? COMMENTS.length : 0;
+
+  pane.innerHTML = `
+    <div class="section-meta">
+      <span class="section-title">Reviews on Others' PRs</span>
+      <span class="section-count">${REVIEWS.length} reviews${totalComments > 0 ? ` · ${totalComments} comments` : ""}</span>
+    </div>
+    ${reviewsHTML}
+    ${commentsHTML}
+  `;
+})();
+
+
+// ── Internal Work Pane ────────────────────────────────────
+(function buildInternalPane() {
+  const pane = document.getElementById("pane-internal");
+
+  const byYear = {};
+  INTERNAL_WORK.forEach(w => { (byYear[w.year]=byYear[w.year]||[]).push(w); });
+  const sortedYears = Object.keys(byYear).sort((a,b)=>b-a);
+
+  function card(w) {
+    const clientBadges = (w.clients||[]).map(c=>`<span class="client-tag">${c}</span>`).join("");
+    return `
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">${w.title}</div>
+        </div>
+        <div class="card-meta">
+          <span class="tag" style="color:var(--accent4);border-color:rgba(210,168,255,.3)">${w.category}</span>
+          &nbsp;·&nbsp; ${MONTH[w.month-1]} ${w.year}
+          ${clientBadges ? `&nbsp;·&nbsp; ${clientBadges}` : ""}
+        </div>
+        <div class="card-desc">${w.description}</div>
+        ${w.impact ? `<div class="impact-box">${w.impact}</div>` : ""}
+        <div class="tags">${(w.tags||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      </div>
+    `;
+  }
+
+  pane.innerHTML = `
+    <div class="section-meta">
+      <span class="section-title">Internal AMD Work &amp; Client Deliverables</span>
+      <span class="section-count">${INTERNAL_WORK.length} items</span>
+    </div>
+    ${sortedYears.map(yr => {
+      const items = byYear[yr].sort((a,b)=>b.month-a.month);
+      return `
+        <div class="year-group">
+          <div class="year-label">${yr} <span class="year-pill">${items.length}</span></div>
+          <div class="cards-grid">${items.map(card).join("")}</div>
+        </div>
+      `;
+    }).join("")}
+  `;
+})();
+
+
+// ── Footer ────────────────────────────────────────────────
+document.getElementById("last-updated").textContent =
+  new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+</script>
+</body>
+</html>
