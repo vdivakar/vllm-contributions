@@ -17,7 +17,7 @@ const PROFILE = {
   github: "divakar-amd",
   githubUrl: "https://github.com/divakar-amd",
   focus: "vLLM / ROCm Inference Optimization",
-  summary: "Specialized in high-performance LLM inference on AMD GPUs — Triton kernel development, MoE tuning systems, FP8 quantization, upstream vLLM contributions, CI infrastructure, and client delivery across Alibaba, ByteDance, Databricks, Tencent, and CharacterAI."
+  summary: "Core upstream vLLM contributor for AMD — built ROCm's MoE auto-tuning infrastructure and the end-to-end FP8/Quark quantization stack powering gpt-oss-120b and DeepSeek-R1 serving today, resolved critical regressions (10–90% Mistral throughput, torch.compile GELU corruption), drove ROCm CI health with 26 merged test-infra PRs and an AITER-CI pipeline redesign to reduce build time from 6 hrs to 12 min."
 };
 
 // ── Repositories ─────────────────────────────────────────
