@@ -55,12 +55,12 @@ const STATE = {
 // List PR numbers here, in the order you want them ranked #1, #2, ...
 // No need to touch individual PR entries below.
 const TOP_PR_NUMBERS = [
+  12049,
   35316,
   36927,
   4927,
   23264,
   8518,
-  12049,
   14068,
   16426,
   29244,
@@ -368,6 +368,7 @@ const PULL_REQUESTS = [
     mergedDate: "2026-03-18",
     tags: ["FP8", "Attention", "Quantization", "ROCm"],
     description: "Added fp8×fp8 attention computation support in the ROCm aiter unified attention kernel.",
+    impact: "Completed the full fp8 (weights+activations+attention) quantized serving pipeline for gpt-oss-120b on ROCm, following #35316",
   },
   {
     id: "vllm-35316",
@@ -381,6 +382,7 @@ const PULL_REQUESTS = [
     mergedDate: "2026-03-13",
     tags: ["w4a8", "FP8", "Quark", "Quantization", "LinearLayer"],
     description: "Added Quark w4a8 (mxfp4×fp8) quantization support for LinearLayer to enable gpt-oss-120b serving.",
+    impact: "Enabled w4a8 quantized gpt-oss-120b serving on ROCm — foundational quant path later extended to fp8 attention (PR #36927)",
   },
   {
     id: "vllm-34977",
@@ -550,6 +552,7 @@ const PULL_REQUESTS = [
     mergedDate: "2025-12-02",
     tags: ["ROCm", "GELU", "Activation", "Bugfix"],
     description: "Added PyTorch fallback for GELU with tanh approximation on ROCm where the fused kernel is unsupported.",
+    impact: "Fixed a torch.compile + tanh-approx GELU bug on ROCm that produced garbage output for Gemma3 and StarCoder2",
   },
   {
     id: "vllm-29243",
@@ -589,6 +592,7 @@ const PULL_REQUESTS = [
     mergedDate: "2025-08-28",
     tags: ["Triton", "FP8", "BMM", "MLA", "Deepseek", "ROCm"],
     description: "Added Triton FP8 batch matrix multiplication kernel for Deepseek MLA (multi-head latent attention) with pre-compilation warmup optimization.",
+    impact: "Improved DeepSeek-R1 serving throughput on ROCm by replacing torch.bmm with a tuned FP8 Triton kernel; pre-compilation step eliminated a first-request kernel-compile stall",
   },
   {
     id: "vllm-18445",
@@ -602,6 +606,7 @@ const PULL_REQUESTS = [
     mergedDate: "2025-05-28",
     tags: ["vLLM-V1", "Profiling", "torch.profiler", "Bugfix"],
     description: "Fixed torch profiler trace collection in vLLM V1 offline inference, restoring profiling capability for all V1 users.",
+    impact: "Restored torch profiler traces for V1 offline benchmarking (previously empty since the GPU worker runs in a separate process) and added automatic kernel-summary dumps",
   },
   {
     id: "vllm-16847",
@@ -642,6 +647,7 @@ const PULL_REQUESTS = [
     mergedDate: "2025-03-04",
     tags: ["MoE", "FP8", "Quantization", "Tuning"],
     description: "Added FP8 block quantization tuning support for MoE kernels in the core vLLM codebase.",
+    impact: "Upgraded MoE tuner to account for FP8 block-quantization weight scales — required for generating correct/optimal kernel configs for DeepSeek-V3",
   },
   {
     id: "vllm-13577",
@@ -733,6 +739,7 @@ const PULL_REQUESTS = [
     mergedDate: "2025-01-17",
     tags: ["MoE", "ROCm", "Tuning", "Infrastructure"],
     description: "Added full MoE kernel tuning infrastructure support for ROCm, enabling auto-tuning on AMD hardware.",
+    impact: "Established the ROCm MoE auto-tuning infrastructure (FP16 + FP8, config pruning) — the foundation all later AMD MoE kernel tuning (incl. #14068) builds on",
   },
   {
     id: "vllm-11813",
@@ -785,6 +792,7 @@ const PULL_REQUESTS = [
     mergedDate: "2024-09-21",
     tags: ["DBRX", "MoE", "Refactor", "Databricks"],
     description: "Refactored DBRX expert layer to inherit from FusedMoe class, enabling MoE optimizations for Databricks' model.",
+    impact: "Unlocked FusedMoe-class optimizations (fused kernels, quantization support) for DBRX — key model for Databricks client engagement",
   },
   {
     id: "vllm-5932",
@@ -811,6 +819,7 @@ const PULL_REQUESTS = [
     mergedDate: "2024-05-28",
     tags: ["MoE", "Triton", "MI300X", "Config", "Kernel"],
     description: "First set of tuned Triton fused_moe kernel configs for MI300X — initial upstream MoE tuning contribution.",
+    impact: "First upstream MoE kernel tuning contribution for MI300X — established the config format/pattern later scaled up by the ROCm MoE tuning infrastructure (#12049)",
   },
   {
     id: "vllm-4927",
