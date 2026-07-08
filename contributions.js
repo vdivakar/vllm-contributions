@@ -392,7 +392,7 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/34977",
     title: "[Mamba][APC] Add test case to compare apc outputs ",
     state: STATE.MERGED,
-    category: CAT.INFRA,
+    category: CAT.MODEL,
     date: "2026-02-20",
     mergedDate: "2026-03-26",
     tags: ["Mamba", "Testing", "APC"],
