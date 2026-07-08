@@ -92,21 +92,29 @@ a:hover { text-decoration: underline; }
 .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
 /* ── Tab bar ─────────────────────────────────────────────── */
+.tab-shell {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); overflow: hidden;
+  margin-top: 24px; margin-bottom: 20px;
+}
 .tab-bar {
-  display: flex; gap: 0; border-bottom: 1px solid var(--border);
-  margin-bottom: 20px; overflow-x: auto;
+  display: flex; gap: 4px; overflow-x: auto;
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+  padding: 6px;
 }
 .tab {
-  padding: 10px 20px; font-size: 13px; font-weight: 500;
-  color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
-  white-space: nowrap; transition: color .15s, border-color .15s;
+  padding: 10px 18px; font-size: 15px; font-weight: 600;
+  color: var(--text-muted); cursor: pointer; border-radius: 6px 6px 0 0;
+  white-space: nowrap; transition: color .15s, background .15s;
 }
-.tab:hover { color: var(--text); }
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab:hover { color: var(--text); background: var(--surface); }
+.tab.active { color: var(--accent); background: var(--surface); }
 .tab-count {
-  display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 10px;
-  background: var(--surface2); color: var(--text-muted); margin-left: 6px;
+  display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  background: var(--bg); color: var(--text-muted); margin-left: 8px;
 }
+.tab.active .tab-count { color: var(--accent); }
+.tab-panel { padding: 20px; }
 
 /* ── Charts row ─────────────────────────────────────────── */
 .charts-row {
@@ -269,11 +277,6 @@ a:hover { text-decoration: underline; }
 .pane.active { display: block; }
 .empty  { text-align:center; padding:40px; color:var(--text-muted); }
 
-/* ── Legend ─────────────────────────────────────────────── */
-.legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
-.leg-item { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-muted); }
-.leg-dot  { width:8px; height:8px; border-radius:50%; }
-
 /* ── Footer ─────────────────────────────────────────────── */
 .footer { margin-top:48px; padding-top:18px; border-top:1px solid var(--border); font-size:12px; color:var(--text-muted); text-align:center; }
 </style>
@@ -298,13 +301,15 @@ a:hover { text-decoration: underline; }
   <!-- Top Contributions -->
   <div id="highlights-section"></div>
 
-  <!-- Tab bar -->
-  <div class="tab-bar" id="tab-bar"></div>
-
-  <!-- Panes -->
-  <div id="pane-prs"     class="pane active"></div>
-  <div id="pane-reviews" class="pane"></div>
-  <div id="pane-internal" class="pane"></div>
+  <!-- Tabbed panel -->
+  <div class="tab-shell">
+    <div class="tab-bar" id="tab-bar"></div>
+    <div class="tab-panel">
+      <div id="pane-prs"     class="pane active"></div>
+      <div id="pane-reviews" class="pane"></div>
+      <div id="pane-internal" class="pane"></div>
+    </div>
+  </div>
 
   <div class="footer">
     Updated <span id="last-updated"></span> &nbsp;·&nbsp;
@@ -512,15 +517,6 @@ tabBar.querySelectorAll(".tab").forEach(el => {
 
   const sectionOrder = (typeof PR_CATEGORY_SECTION_ORDER !== "undefined") ? PR_CATEGORY_SECTION_ORDER : [];
 
-  function makeFilters() {
-    return `
-      <div class="legend">
-        <div class="leg-item"><div class="leg-dot dot-merged"></div>Merged</div>
-        <div class="leg-item"><div class="leg-dot dot-open"></div>Open</div>
-      </div>
-    `;
-  }
-
   function render() {
     const data = VISIBLE_PRS;
     const byCat = {};
@@ -545,7 +541,6 @@ tabBar.querySelectorAll(".tab").forEach(el => {
         }).join("");
 
     pane.innerHTML = `
-      ${makeFilters()}
       <div class="section-meta">
         <span class="section-title">Pull Requests</span>
         <span class="section-count">${data.length}</span>
