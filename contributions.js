@@ -17,7 +17,7 @@ const PROFILE = {
   github: "divakar-amd",
   githubUrl: "https://github.com/divakar-amd",
   focus: "vLLM / ROCm Inference Optimization",
-  summary: "Core upstream vLLM contributor for AMD — built ROCm's MoE auto-tuning infrastructure and the end-to-end FP8/Quark quantization stack powering gpt-oss-120b and DeepSeek-R1 serving today, resolved critical regressions (10–90% Mistral throughput, torch.compile GELU corruption), drove ROCm CI health with 26 merged test-infra PRs and an AITER-CI pipeline redesign to reduce build time from 6 hrs to 12 min."
+  summary: "Core upstream vLLM contributor for AMD — built ROCm's MoE tuning infrastructure for vLLM; added end-to-end w4a8 Quark quantization stack powering gpt-oss-120b serving today; resolved critical regressions; drove ROCm vLLM CI health."
 };
 
 // ── Repositories ─────────────────────────────────────────
@@ -63,7 +63,7 @@ const PROJECTS = [
     id: "proj-moe-tuning",
     title: "ROCm MoE Auto-Tuning Infrastructure — Built From Scratch",
     summary: "Designed and built ROCm's MoE kernel auto-tuning system from the ground up — the foundation all later AMD MoE kernel work (FP8 block quant, per-model configs) builds on.",
-    impact: "40% (TP1) / 25% (TP2) / 18% (TP4) / 12% (TP8) throughput gains on MI308; now the standard tuning path for every new MoE model on ROCm",
+    impact: "40% (TP1) / 25% (TP2) / 18% (TP4) / 12% (TP8) throughput gains on MI308; formed the standard tuning path for every new MoE model on ROCm",
     tags: ["MoE", "ROCm", "Triton", "Auto-Tuning"],
     items: [
       { type: "pr", id: "vllm-12049" },
@@ -89,8 +89,8 @@ const PROJECTS = [
   {
     id: "proj-ci-health",
     title: "vLLM Upstream CI Health for AMD / ROCm",
-    summary: "Drove ROCm CI reliability across the vLLM upstream test suite and the AITER pipeline — from a full Buildkite→GitHub Actions redesign to an ongoing effort restoring failing ROCm test groups to green.",
-    impact: "AITER CI build time: 6 hrs → 12 min (30× speedup); 26+ merged CI/infra PRs upstream",
+    summary: "Drove ROCm CI reliability across the vLLM upstream test suite and the AITER pipeline — restoring failing ROCm test groups to green and improving overall CI stability.",
+    impact: "26+ merged CI/infra PRs upstream; AITER CI build time: 6 hrs → 12 min (30× speedup)",
     tags: ["CI", "ROCm", "Infrastructure", "GitHub Actions"],
     items: [
       { type: "pr", id: "vllm-46658" },
@@ -105,8 +105,8 @@ const PROJECTS = [
   {
     id: "proj-bmm-deepseek",
     title: "Triton FP8 BMM Kernel Integration for DeepSeek MLA",
-    summary: "Built and shipped a tuned Triton FP8 batch matmul kernel for DeepSeek's multi-head latent attention (MLA) on ROCm, replacing torch.bmm and eliminating a first-request compile stall — then carried it through to production client deployments.",
-    impact: "Improved DeepSeek-R1 serving throughput on ROCm; unblocked CharacterAI and Tencent production DeepSeek deployments on AMD",
+    summary: "Integrated AITER Triton FP8 batch matmul kernel for DeepSeek's multi-head latent attention (MLA) on ROCm, replacing torch.bmm and eliminating a first-request compile stall — then carried it through to production client deployments.",
+    impact: "Improved DeepSeek-R1 serving throughput on ROCm; unblocked key clients' production DeepSeek deployments on AMD",
     tags: ["Triton", "FP8", "BMM", "MLA", "DeepSeek", "ROCm"],
     items: [
       { type: "pr", id: "vllm-23264" },
@@ -114,11 +114,12 @@ const PROJECTS = [
   },
   {
     id: "proj-regression-fixes",
-    title: "Critical Production Regression Fixes",
-    summary: "Root-caused and fixed two high-severity, production-blocking regressions on ROCm: a Mistral throughput regression and a torch.compile activation-fusion correctness bug.",
+    title: "Critical Performance improvements and Regression Fixes",
+    summary: "Root-caused and fixed high-severity, production-blocking regressions on ROCm including a Mistral throughput regression and a torch.compile activation-fusion correctness bug.",
     impact: "Resolved a 10–90% Mistral throughput regression and a torch.compile+GELU bug that produced garbage output on Gemma3/StarCoder2",
     tags: ["Bugfix", "ROCm", "Performance", "Correctness"],
     items: [
+      { type: "pr", id: "vllm-4927" },
       { type: "pr", id: "vllm-16426" },
       { type: "pr", id: "vllm-29244" },
     ],
@@ -126,11 +127,10 @@ const PROJECTS = [
   {
     id: "proj-client-sla",
     title: "Client SLA Deliverables — Priority Production Serving",
-    summary: "Served as the AMD-side performance and correctness owner across major inference clients, meeting hard throughput and latency SLAs on production timelines.",
-    impact: "SLAs met for Alibaba (1.3× Mixtral throughput), ByteDance (23ms decode latency), and Databricks (DBRX FP8 MoE enablement)",
+    summary: "Served as the AMD-side performance and correctness contributor across major inference clients, meeting hard throughput and latency SLAs on production timelines.",
+    impact: "SLAs met for Alibaba (1.3× Mixtral throughput), ByteDance (23ms decode latency)",
     tags: ["Client Deliverables", "SLA", "Serving"],
     items: [
-      { type: "pr", id: "vllm-8518" },
     ],
   },
   {
@@ -142,6 +142,7 @@ const PROJECTS = [
     items: [
       { type: "issue", id: "issue-pytorch-2286" },
       { type: "issue", id: "issue-vllm-19579" },
+      { type: "pr", id: "vllm-18445" },
     ],
   },
 ];
@@ -1808,11 +1809,11 @@ const PR_CATEGORY_MANUAL_ORDER = {
 
 const CONTRIBUTOR_RANK = {
   repo: REPO.VLLM_UPSTREAM,
-  rank: 49,
-  totalContributors: 462,
-  commits: 51,
+  rank: 62,
+  totalContributors: 2890,
+  commits: 53,
   metric: "commits (all-time, default branch)",
-  fetchedDate: "2026-07-06",
+  fetchedDate: "2026-07-08",
 };
 
 
