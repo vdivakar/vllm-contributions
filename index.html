@@ -76,13 +76,13 @@ a:hover { text-decoration: underline; }
   display: flex; flex-direction: column; justify-content: center;
 }
 .stat-row {
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; justify-content: flex-start;
+  gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--border);
 }
 .stat-row:first-child { padding-top: 0; }
 .stat-row:last-child { border-bottom: none; padding-bottom: 0; }
 .stat-row .stat-label { margin-top: 0; text-align: left; }
-.stat-row .stat-sub { margin-top: 0; text-align: right; white-space: nowrap; }
+.stat-row .stat-sub { margin-top: 0; text-align: left; white-space: nowrap; }
 .stat-value { font-size: 22px; font-weight: 700; color: var(--accent); }
 .stat-value.g { color: var(--accent3); }
 .stat-value.p { color: var(--accent4); }
@@ -378,15 +378,15 @@ const hasRank        = typeof CONTRIBUTOR_RANK !== "undefined";
 
 document.getElementById("stats-grid").innerHTML = `
   <div class="stat-row">
-    <div><div class="stat-label">Upstream PRs Merged</div><div class="stat-sub">${totalMerged} total across all repos</div></div>
+    <div><div class="stat-label">Upstream vLLM PRs Merged: </div></div>
     <div class="stat-value g">${upstreamMerged}</div>
   </div>
   ${hasRank ? `<div class="stat-row">
-    <div class="stat-label">vLLM Rank (of ${CONTRIBUTOR_RANK.totalContributors}) (all time)</div>
+    <div class="stat-label">vLLM Rank (of ${CONTRIBUTOR_RANK.totalContributors}) (all time): </div>
     <div class="stat-value p">#${CONTRIBUTOR_RANK.rank}</div>
   </div>` : ""}
   <div class="stat-row">
-    <div class="stat-label">PR Reviews</div>
+    <div class="stat-label">PR Reviews: </div>
     <div class="stat-value p">${REVIEWS.length}</div>
   </div>
 `;
