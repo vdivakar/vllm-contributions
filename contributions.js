@@ -52,21 +52,98 @@ const STATE = {
   DRAFT:   "draft",
 };
 
-// ── Top Upstream Contributions ─────────────────────────────
-// List PR numbers here, in the order you want them ranked #1, #2, ...
-// No need to touch individual PR entries below.
-const TOP_PR_NUMBERS = [
-  12049,
-  35316,
-  36927,
-  4927,
-  23264,
-  8518,
-  14068,
-  16426,
-  29244,
-  4951,
-  18445,
+// ── Top Projects Delivered ─────────────────────────────────
+// The headline section: major initiatives rather than individual PRs.
+// Each project pulls together PRs (PULL_REQUESTS), internal work
+// (INTERNAL_WORK), and issues (ISSUES) into one story. `items` is
+// ordered by importance — the first 3 render open, the rest behind
+// a "+N more" toggle. Reference items by their `id` field.
+const PROJECTS = [
+  {
+    id: "proj-moe-tuning",
+    title: "ROCm MoE Auto-Tuning Infrastructure — Built From Scratch",
+    summary: "Designed and built ROCm's MoE kernel auto-tuning system from the ground up — the foundation all later AMD MoE kernel work (FP8 block quant, per-model configs) builds on.",
+    impact: "40% (TP1) / 25% (TP2) / 18% (TP4) / 12% (TP8) throughput gains on MI308; now the standard tuning path for every new MoE model on ROCm",
+    tags: ["MoE", "ROCm", "Triton", "Auto-Tuning"],
+    items: [
+      { type: "pr", id: "vllm-12049" },
+      { type: "pr", id: "vllm-14068" },
+      { type: "pr", id: "vllm-4951" },
+      { type: "pr", id: "vllm-4927" },
+      { type: "pr", id: "rocmvllm-13" },
+      { type: "pr", id: "rocmvllm-14" },
+    ],
+  },
+  {
+    id: "proj-w4a8",
+    title: "W4A8 Quark Quantization Stack for gpt-oss-120b",
+    summary: "Delivered the end-to-end w4a8 (mxfp4×fp8) quantization pipeline on ROCm — from LinearLayer support through fp8×fp8 attention — enabling gpt-oss-120b serving at low precision.",
+    impact: "120B model serving at w4a8 precision validated and delivered end-to-end",
+    tags: ["w4a8", "FP8", "Quark", "Quantization", "gpt-oss-120b"],
+    items: [
+      { type: "pr", id: "vllm-35316" },
+      { type: "pr", id: "vllm-36927" },
+      { type: "pr", id: "vllm-38296" },
+    ],
+  },
+  {
+    id: "proj-ci-health",
+    title: "vLLM Upstream CI Health for AMD / ROCm",
+    summary: "Drove ROCm CI reliability across the vLLM upstream test suite and the AITER pipeline — from a full Buildkite→GitHub Actions redesign to an ongoing effort restoring failing ROCm test groups to green.",
+    impact: "AITER CI build time: 6 hrs → 12 min (30× speedup); 26+ merged CI/infra PRs upstream",
+    tags: ["CI", "ROCm", "Infrastructure", "GitHub Actions"],
+    items: [
+      { type: "pr", id: "vllm-46658" },
+      { type: "pr", id: "aiter-1124" },
+      { type: "pr", id: "vllm-11813" },
+      { type: "pr", id: "vllm-8971" },
+      { type: "pr", id: "vllm-32787" },
+      { type: "pr", id: "vllm-42104" },
+      { type: "pr", id: "vllm-45869" },
+    ],
+  },
+  {
+    id: "proj-bmm-deepseek",
+    title: "Triton FP8 BMM Kernel Integration for DeepSeek MLA",
+    summary: "Built and shipped a tuned Triton FP8 batch matmul kernel for DeepSeek's multi-head latent attention (MLA) on ROCm, replacing torch.bmm and eliminating a first-request compile stall — then carried it through to production client deployments.",
+    impact: "Improved DeepSeek-R1 serving throughput on ROCm; unblocked CharacterAI and Tencent production DeepSeek deployments on AMD",
+    tags: ["Triton", "FP8", "BMM", "MLA", "DeepSeek", "ROCm"],
+    items: [
+      { type: "pr", id: "vllm-23264" },
+    ],
+  },
+  {
+    id: "proj-regression-fixes",
+    title: "Critical Production Regression Fixes",
+    summary: "Root-caused and fixed two high-severity, production-blocking regressions on ROCm: a Mistral throughput regression and a torch.compile activation-fusion correctness bug.",
+    impact: "Resolved a 10–90% Mistral throughput regression and a torch.compile+GELU bug that produced garbage output on Gemma3/StarCoder2",
+    tags: ["Bugfix", "ROCm", "Performance", "Correctness"],
+    items: [
+      { type: "pr", id: "vllm-16426" },
+      { type: "pr", id: "vllm-29244" },
+    ],
+  },
+  {
+    id: "proj-client-sla",
+    title: "Client SLA Deliverables — Priority Production Serving",
+    summary: "Served as the AMD-side performance and correctness owner across major inference clients, meeting hard throughput and latency SLAs on production timelines.",
+    impact: "SLAs met for Alibaba (1.3× Mixtral throughput), ByteDance (23ms decode latency), and Databricks (DBRX FP8 MoE enablement)",
+    tags: ["Client Deliverables", "SLA", "Serving"],
+    items: [
+      { type: "pr", id: "vllm-8518" },
+    ],
+  },
+  {
+    id: "proj-misc",
+    title: "Miscellaneous — Cross-Cutting Investigations & Knowledge Sharing",
+    summary: "Deep-dive investigations, root-cause analysis, and internal documentation that don't map to a single deliverable but informed production decisions and team onboarding.",
+    impact: "Root-caused a ROCm PyTorch memory bug (hipblasLT pool) and a HipGraph capture-size mismatch (fixed in ROCm-7); authored reference docs used across the team",
+    tags: ["Analysis", "Knowledge Sharing", "Investigation"],
+    items: [
+      { type: "issue", id: "issue-pytorch-2286" },
+      { type: "issue", id: "issue-vllm-19579" },
+    ],
+  },
 ];
 
 

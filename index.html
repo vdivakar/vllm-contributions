@@ -141,24 +141,48 @@ a:hover { text-decoration: underline; }
 .stats-chart-row .chart-card .chart-wrap { min-height: 200px; }
 @media (max-width: 900px) { .stats-chart-row { grid-template-columns: 1fr; } }
 
-/* ── Highlights ─────────────────────────────────────────── */
-.highlights-wrap {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 10px;
+/* ── Top Projects ───────────────────────────────────────── */
+.projects-wrap {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 12px; align-items: stretch;
   margin-bottom: 10px;
 }
-.highlight-card {
+.project-card {
   background: var(--surface); border: 1px solid var(--border);
   border-left: 3px solid var(--accent5);
-  border-radius: var(--radius); padding: 14px;
-  position: relative; transition: border-color .12s, transform .1s;
+  border-radius: var(--radius); padding: 14px 18px;
+  transition: border-color .12s;
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px;
+  align-items: start;
 }
-.highlight-card:hover { border-color: var(--accent5); transform: translateY(-1px); }
-.highlight-rank {
-  position:absolute; top:10px; right:12px;
-  font-size: 11px; font-weight: 700; color: var(--accent5);
+.project-card:hover { border-color: var(--accent5); }
+@media (max-width: 560px) {
+  .project-card { grid-template-columns: 1fr; }
+  .project-right { border-left: none; border-top: 1px solid var(--border); padding: 10px 0 0; }
 }
+.project-left { min-width: 0; }
+.project-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; margin-bottom: 6px;
+}
+.project-title { font-size: 14.5px; font-weight: 700; color: var(--text); line-height: 1.4; }
+.project-rank { font-size: 11px; font-weight: 700; color: var(--accent5); white-space: nowrap; margin-top: 2px; }
+.project-summary { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 8px; }
+.project-right {
+  border-left: 1px solid var(--border); padding-left: 16px;
+  min-width: 0; display: flex; flex-direction: column;
+}
+.project-right-label {
+  font-size: 10.5px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px;
+}
+.project-extra.hidden { display: none !important; }
+.project-toggle {
+  font-size: 11px; color: var(--accent); cursor: pointer;
+  padding: 6px 14px; user-select: none; background: var(--surface);
+}
+.project-toggle:hover { text-decoration: underline; }
+.dot-internal { background: var(--accent4); }
 
 /* ── Section title ─────────────────────────────────────────── */
 .section-meta {
@@ -298,8 +322,8 @@ a:hover { text-decoration: underline; }
     </div>
   </div>
 
-  <!-- Top Contributions -->
-  <div id="highlights-section"></div>
+  <!-- Top Projects -->
+  <div id="projects-section"></div>
 
   <!-- Tabbed panel -->
   <div class="tab-shell">
@@ -404,31 +428,6 @@ function comparePRsByImportance(a, b, cat) {
   return new Date(b.mergedDate || b.date) - new Date(a.mergedDate || a.date);
 }
 
-// ── Shared PR card renderer ─────────────────────────────────
-function prCard(p, opts = {}) {
-  const dotCls = `dot-${p.state}`;
-  const date   = p.mergedDate ? `Merged ${p.mergedDate}` : `Opened ${p.date}`;
-  return `
-    <div class="card ${opts.highlight ? "highlight-card" : ""}">
-      ${opts.highlight ? `<div class="highlight-rank">#${opts.rank}</div>` : ""}
-      <div class="card-head">
-        <div class="card-title"><a href="${p.url}" target="_blank">#${p.number} ${p.title}</a></div>
-        <div class="dot ${dotCls}" title="${p.state}"></div>
-      </div>
-      <div class="card-meta">
-        <span class="repo-tag">${p.repo}</span>
-        &nbsp;·&nbsp;${date}
-      </div>
-      ${p.description ? `<div class="card-desc">${p.description}</div>` : ""}
-      ${p.impact ? `<div class="impact-box">${p.impact}</div>` : ""}
-      <div class="tags">
-        ${(p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join("")}
-        ${prCategories(p).map(c=>`<span class="tag" style="color:var(--accent4);border-color:rgba(210,168,255,.3)">${c}</span>`).join("")}
-      </div>
-    </div>
-  `;
-}
-
 function prCompactRow(p) {
   const dotCls = `dot-${p.state}`;
   const date   = p.mergedDate ? p.mergedDate : p.date;
@@ -448,21 +447,87 @@ function prCompactRow(p) {
   `;
 }
 
-// ── Top Contributions (highlight reel) ─────────────────────
-(function buildHighlights() {
-  const highlighted = TOP_PR_NUMBERS
-    .map(n => VISIBLE_PRS.find(p => p.number === n))
-    .filter(Boolean);
-  if (highlighted.length === 0) return;
-  document.getElementById("highlights-section").innerHTML = `
+// ── Top Projects Delivered ──────────────────────────────────
+(function buildProjects() {
+  const section = document.getElementById("projects-section");
+  if (typeof PROJECTS === "undefined" || PROJECTS.length === 0) return;
+
+  const PROJECT_ITEMS_SHOWN = 3;
+
+  // Resolve a {type, id} reference into a display-ready row descriptor,
+  // pulling from whichever data array the item type points to.
+  function resolveProjectItem(it) {
+    if (it.type === "pr") {
+      const p = PULL_REQUESTS.find(x => x.id === it.id);
+      if (!p) return null;
+      return { dotCls: `dot-${p.state}`, title: `#${p.number} ${p.title}`, url: p.url };
+    }
+    if (it.type === "issue") {
+      const iss = ISSUES.find(x => x.id === it.id);
+      if (!iss) return null;
+      return { dotCls: iss.state === "closed" ? "dot-closed" : "dot-open", title: `#${iss.number} ${iss.title}`, url: iss.url };
+    }
+    if (it.type === "internal") {
+      const w = INTERNAL_WORK.find(x => x.id === it.id);
+      if (!w) return null;
+      return { dotCls: "dot-internal", title: w.title, url: null };
+    }
+    return null;
+  }
+
+  function itemRow(item, extra) {
+    return `
+      <div class="pr-row ${extra ? "project-extra hidden" : ""}">
+        <div class="dot ${item.dotCls}"></div>
+        <div class="pr-row-title">${item.url ? `<a href="${item.url}" target="_blank">${item.title}</a>` : item.title}</div>
+      </div>
+    `;
+  }
+
+  function projectCard(proj, idx) {
+    const items = proj.items.map(resolveProjectItem).filter(Boolean);
+    const extraCount = Math.max(0, items.length - PROJECT_ITEMS_SHOWN);
+    const rightLabel = proj.items.some(it => it.type === "pr") ? "Top PRs" : "Related Issues";
+    return `
+      <div class="project-card">
+        <div class="project-left">
+          <div class="project-head">
+            <div class="project-title">${proj.title}</div>
+            <div class="project-rank">#${idx + 1}</div>
+          </div>
+          <div class="project-summary">${proj.summary}</div>
+          ${proj.impact ? `<div class="impact-box">${proj.impact}</div>` : ""}
+        </div>
+        <div class="project-right">
+          <div class="project-right-label">${rightLabel}</div>
+          <div class="pr-row-list">
+            ${items.map((it, i) => itemRow(it, i >= PROJECT_ITEMS_SHOWN)).join("")}
+          </div>
+          ${extraCount > 0 ? `<div class="project-toggle">+${extraCount} more</div>` : ""}
+        </div>
+      </div>
+    `;
+  }
+
+  section.innerHTML = `
     <div class="section-meta">
-      <span class="section-title">⭐ Top Upstream Contributions</span>
-      <span class="section-count">${highlighted.length} highlighted</span>
+      <span class="section-title">⭐ Top Projects Delivered</span>
+      <span class="section-count">${PROJECTS.length} projects</span>
     </div>
-    <div class="highlights-wrap">
-      ${highlighted.map((p, i) => prCard(p, {highlight: true, rank: i + 1})).join("")}
+    <div class="projects-wrap">
+      ${PROJECTS.map(projectCard).join("")}
     </div>
   `;
+
+  section.querySelectorAll(".project-toggle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const list = btn.previousElementSibling;
+      const hiddenRows = list.querySelectorAll(".project-extra");
+      const isHidden = hiddenRows[0]?.classList.contains("hidden");
+      hiddenRows.forEach(r => r.classList.toggle("hidden", !isHidden));
+      btn.textContent = isHidden ? "Show fewer" : `+${hiddenRows.length} more`;
+    });
+  });
 })();
 
 // ── Charts ────────────────────────────────────────────────
