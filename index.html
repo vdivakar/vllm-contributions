@@ -152,27 +152,6 @@ a:hover { text-decoration: underline; }
   font-size: 11px; font-weight: 700; color: var(--accent5);
 }
 
-/* ── Toolbar ─────────────────────────────────────────────── */
-.toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
-.search-wrap { position: relative; }
-.search-input {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 7px 12px 7px 32px;
-  font-size: 13px; color: var(--text); outline: none; width: 280px;
-}
-.search-input:focus { border-color: var(--accent); }
-.search-input::placeholder { color: var(--text-muted); }
-.search-icon { position:absolute; left:9px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none; }
-
-.filters { display:flex; gap:6px; flex-wrap:wrap; }
-.fbtn {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 20px; padding: 4px 12px;
-  font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all .12s;
-}
-.fbtn:hover { border-color: var(--accent); color: var(--accent); }
-.fbtn.active { background: var(--accent); border-color: var(--accent); color: #0d1117; font-weight: 600; }
-
 /* ── Section title ─────────────────────────────────────────── */
 .section-meta {
   display:flex; align-items:center; justify-content:space-between;
@@ -531,34 +510,10 @@ tabBar.querySelectorAll(".tab").forEach(el => {
 (function buildPRPane() {
   const pane = document.getElementById("pane-prs");
 
-  // State & filter
-  let stateFilter = "all";
-  let repoFilter  = "all";
-  let search      = "";
-
-  const allRepos = [...new Set(VISIBLE_PRS.map(p => p.repo))];
-  const allStates = ["all","merged","open"];
   const sectionOrder = (typeof PR_CATEGORY_SECTION_ORDER !== "undefined") ? PR_CATEGORY_SECTION_ORDER : [];
 
   function makeFilters() {
     return `
-      <div class="toolbar">
-        <div class="search-wrap">
-          <svg class="search-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11"/>
-          </svg>
-          <input class="search-input" id="pr-search" type="text" placeholder="Search PRs…" value="${search}" />
-        </div>
-        <div class="filters" id="pr-state-filters">
-          ${allStates.map(s=>`<button class="fbtn ${stateFilter===s?"active":""}" data-state="${s}">${s==="all"?"All States":s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join("")}
-        </div>
-      </div>
-      <div class="toolbar">
-        <div class="filters" id="pr-repo-filters">
-          <button class="fbtn ${repoFilter==="all"?"active":""}" data-repo="all">All Repos</button>
-          ${allRepos.map(r=>`<button class="fbtn ${repoFilter===r?"active":""}" data-repo="${r}">${r}</button>`).join("")}
-        </div>
-      </div>
       <div class="legend">
         <div class="leg-item"><div class="leg-dot dot-merged"></div>Merged</div>
         <div class="leg-item"><div class="leg-dot dot-open"></div>Open</div>
@@ -566,20 +521,8 @@ tabBar.querySelectorAll(".tab").forEach(el => {
     `;
   }
 
-  function filtered() {
-    return VISIBLE_PRS.filter(p => {
-      if (stateFilter !== "all" && p.state !== stateFilter) return false;
-      if (repoFilter  !== "all" && p.repo  !== repoFilter)  return false;
-      if (search) {
-        const hay = [p.title, p.description||"", ...(p.tags||[])].join(" ").toLowerCase();
-        if (!hay.includes(search)) return false;
-      }
-      return true;
-    });
-  }
-
   function render() {
-    const data = filtered();
+    const data = VISIBLE_PRS;
     const byCat = {};
     data.forEach(p => {
       const cat = primaryCategory(p);
@@ -605,20 +548,10 @@ tabBar.querySelectorAll(".tab").forEach(el => {
       ${makeFilters()}
       <div class="section-meta">
         <span class="section-title">Pull Requests</span>
-        <span class="section-count">${data.length} of ${VISIBLE_PRS.length}</span>
+        <span class="section-count">${data.length}</span>
       </div>
       ${listHTML}
     `;
-    bindPREvents();
-  }
-
-  function bindPREvents() {
-    pane.querySelector("#pr-search").addEventListener("input", e => { search=e.target.value.toLowerCase(); render(); });
-    pane.querySelectorAll("[data-state]").forEach(b => b.addEventListener("click", () => { stateFilter=b.dataset.state; render(); }));
-    pane.querySelectorAll("[data-repo]").forEach(b  => b.addEventListener("click", () => { repoFilter=b.dataset.repo;   render(); }));
-    // restore search focus
-    const inp = pane.querySelector("#pr-search");
-    if (inp && search) { inp.focus(); inp.setSelectionRange(search.length,search.length); }
   }
 
   render();

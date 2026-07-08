@@ -41,6 +41,7 @@ const CAT = {
   MODEL:     "Model Support",
   KNOWLEDGE: "Knowledge Sharing",
   QUANT:     "Quantization",
+  MISC:      "Miscellaneous",
 };
 
 // ── PR States ─────────────────────────────────────────
@@ -601,7 +602,7 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/18445",
     title: "[V1] fix torch profiling for V1 offline scenarios",
     state: STATE.MERGED,
-    category: CAT.BUGFIX,
+    category: CAT.MISC,
     date: "2025-05-21",
     mergedDate: "2025-05-28",
     tags: ["vLLM-V1", "Profiling", "torch.profiler", "Bugfix"],
@@ -682,7 +683,7 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/13438",
     title: "[ROCm] fix get_device_name for rocm",
     state: STATE.MERGED,
-    category: CAT.BUGFIX,
+    category: CAT.MISC,
     date: "2025-02-18",
     mergedDate: "2025-02-18",
     tags: ["ROCm", "Device", "Bugfix"],
@@ -748,7 +749,7 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/11813",
     title: "[Misc] sort torch profiler table by kernel timing",
     state: STATE.MERGED,
-    category: CAT.INFRA,
+    category: CAT.MISC,
     date: "2025-01-07",
     mergedDate: "2025-01-08",
     tags: ["Profiling", "torch.profiler", "UX"],
@@ -761,7 +762,7 @@ const PULL_REQUESTS = [
     url: "https://github.com/vllm-project/vllm/pull/8971",
     title: "[Misc] log when using default MoE config",
     state: STATE.MERGED,
-    category: CAT.INFRA,
+    category: CAT.MISC,
     date: "2024-09-30",
     mergedDate: "2024-10-03",
     tags: ["MoE", "Logging", "UX"],
@@ -1233,7 +1234,7 @@ const PULL_REQUESTS = [
     url: "https://github.com/mlc-ai/xgrammar/pull/476",
     title: "Fix warp_size in triton kernel for AMD GPUs",
     state: STATE.MERGED,
-    category: CAT.BUGFIX,
+    category: CAT.MISC,
     date: "2025-11-20",
     mergedDate: "2025-12-18",
     tags: ["Triton", "AMD", "warp_size", "Bugfix"],
@@ -1694,6 +1695,7 @@ const PR_CATEGORY_SECTION_ORDER = [
   CAT.MOE,
   CAT.BUGFIX,
   CAT.INFRA,
+  CAT.MISC,
 ];
 
 // Hand-curated importance order (id list, most important first) for
