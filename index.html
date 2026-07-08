@@ -152,14 +152,9 @@ a:hover { text-decoration: underline; }
   border-left: 3px solid var(--accent5);
   border-radius: var(--radius); padding: 14px 18px;
   transition: border-color .12s;
-  display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px;
-  align-items: start;
+  display: flex; flex-direction: column;
 }
 .project-card:hover { border-color: var(--accent5); }
-@media (max-width: 560px) {
-  .project-card { grid-template-columns: 1fr; }
-  .project-right { border-left: none; border-top: 1px solid var(--border); padding: 10px 0 0; }
-}
 .project-left { min-width: 0; }
 .project-head {
   display: flex; align-items: flex-start; justify-content: space-between;
@@ -169,7 +164,7 @@ a:hover { text-decoration: underline; }
 .project-rank { font-size: 11px; font-weight: 700; color: var(--accent5); white-space: nowrap; margin-top: 2px; }
 .project-summary { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 8px; }
 .project-right {
-  border-left: 1px solid var(--border); padding-left: 16px;
+  border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;
   min-width: 0; display: flex; flex-direction: column;
 }
 .project-right-label {
