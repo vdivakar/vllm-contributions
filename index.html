@@ -43,8 +43,7 @@ a:hover { text-decoration: underline; }
   background: linear-gradient(135deg, #161b22 0%, #1c2333 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 32px 36px;
-  margin-bottom: 20px;
+  padding: 24px 26px;
   position: relative;
   overflow: hidden;
 }
@@ -58,7 +57,7 @@ a:hover { text-decoration: underline; }
 .hero-gh     { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 .hero-gh a   { color: var(--text-muted); }
 .hero-gh a:hover { color: var(--accent); }
-.hero-desc   { margin-top: 14px; font-size: 13px; color: var(--text-muted); max-width: 700px; line-height: 1.7; }
+.hero-desc   { margin-top: 14px; font-size: 13px; color: var(--text-muted); line-height: 1.7; }
 .badge-row   { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
 .badge {
   font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing:.5px;
@@ -76,19 +75,20 @@ a:hover { text-decoration: underline; }
   display: flex; flex-direction: column; justify-content: center;
 }
 .stat-row {
-  display: flex; align-items: baseline; justify-content: flex-start;
+  display: flex; align-items: center; justify-content: space-between;
   gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--border);
 }
 .stat-row:first-child { padding-top: 0; }
 .stat-row:last-child { border-bottom: none; padding-bottom: 0; }
 .stat-row .stat-label { margin-top: 0; text-align: left; }
 .stat-row .stat-sub { margin-top: 0; text-align: left; white-space: nowrap; }
-.stat-value { font-size: 22px; font-weight: 700; color: var(--accent); }
+.stat-value { font-size: 22px; font-weight: 700; color: var(--accent); white-space: nowrap; flex-shrink: 0; }
 .stat-value.g { color: var(--accent3); }
 .stat-value.p { color: var(--accent4); }
 .stat-value.o { color: var(--accent5); }
 .stat-value.r { color: var(--accent2); }
-.stat-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing:.5px; }
+.stat-label { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+.stat-label strong { color: var(--text); font-weight: 600; }
 .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
 /* ── Tab bar ─────────────────────────────────────────────── */
@@ -129,17 +129,14 @@ a:hover { text-decoration: underline; }
 .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; }
 .chart-wrap  { position: relative; height: 200px; flex: 1; }
 
-/* ── Hero row ───────────────────────────────────────────── */
-.hero-row { margin-bottom: 20px; }
-.hero-row .hero { margin-bottom: 0; }
-
-/* ── Stats + repo chart row ───────────────────────────────── */
-.stats-chart-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+/* ── Profile row: hero + stats + repo chart ──────────────── */
+.profile-row {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 14px;
   align-items: stretch; margin-bottom: 20px;
 }
-.stats-chart-row .chart-card .chart-wrap { min-height: 200px; }
-@media (max-width: 900px) { .stats-chart-row { grid-template-columns: 1fr; } }
+.profile-row .chart-card .chart-wrap { min-height: 180px; }
+@media (max-width: 1100px) { .profile-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .profile-row { grid-template-columns: 1fr; } }
 
 /* ── Top Projects ───────────────────────────────────────── */
 .projects-wrap {
@@ -303,13 +300,9 @@ a:hover { text-decoration: underline; }
 <body>
 <div class="page">
 
-  <!-- Hero -->
-  <div class="hero-row">
+  <!-- Profile: hero + stats + repo chart -->
+  <div class="profile-row">
     <div class="hero" id="hero"></div>
-  </div>
-
-  <!-- Stats + Repo chart -->
-  <div class="stats-chart-row">
     <div class="stats-list" id="stats-grid"></div>
     <div class="chart-card">
       <div class="chart-title">PRs by Repository</div>
@@ -381,15 +374,15 @@ const hasRank        = typeof CONTRIBUTOR_RANK !== "undefined";
 
 document.getElementById("stats-grid").innerHTML = `
   <div class="stat-row">
-    <div><div class="stat-label">Upstream vLLM PRs Merged: </div></div>
+    <div class="stat-label">Upstream vLLM PRs merged</div>
     <div class="stat-value g">${upstreamMerged}</div>
   </div>
   ${hasRank ? `<div class="stat-row">
-    <div class="stat-label">vLLM Rank (of ${CONTRIBUTOR_RANK.totalContributors} total contributors) (all time): </div>
+    <div class="stat-label">All-time vLLM rank<br>(of <strong>${CONTRIBUTOR_RANK.totalContributors.toLocaleString()}+</strong> contributors)</div>
     <div class="stat-value p">#${CONTRIBUTOR_RANK.rank}</div>
   </div>` : ""}
   <div class="stat-row">
-    <div class="stat-label">PR Reviews: </div>
+    <div class="stat-label">PR reviews given</div>
     <div class="stat-value p">${REVIEWS.length}</div>
   </div>
 `;

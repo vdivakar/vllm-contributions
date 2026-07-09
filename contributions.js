@@ -17,7 +17,7 @@ const PROFILE = {
   github: "divakar-amd",
   githubUrl: "https://github.com/divakar-amd",
   focus: "vLLM / ROCm Inference Optimization",
-  summary: "Core upstream vLLM contributor for AMD — built ROCm's MoE tuning infrastructure for vLLM; added end-to-end w4a8 Quark quantization stack powering gpt-oss-120b serving today; resolved critical regressions; drove ROCm vLLM CI health."
+  summary: "Core upstream vLLM contributor for AMD — built ROCm's MoE tuning infrastructure for vLLM; added end-to-end w4a8 Quark quantization stack powering gpt-oss-120b serving today; improved performance; resolved critical regressions; drove ROCm vLLM CI health."
 };
 
 // ── Repositories ─────────────────────────────────────────
