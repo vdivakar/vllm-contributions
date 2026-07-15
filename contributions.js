@@ -1459,6 +1459,17 @@ const REVIEWS = [
     date: "2025-04-08",
     tags: ["AMD", "Llama4", "MoE", "OAM", "Hardware"],
   },
+  // ROCm/aiter
+  {
+    id: "review-aiter-2360",
+    repo: REPO.AITER,
+    prNumber: 2360,
+    url: "https://github.com/ROCm/aiter/pull/2360",
+    title: "[TRITON] Unified attention FP8 cleanup",
+    prState: "open",
+    date: "2026-03-19",
+    tags: ["Triton", "FP8", "Attention", "Cleanup"],
+  },
   // ROCm/vllm
   {
     id: "review-rocmvllm-506",
@@ -1529,17 +1540,6 @@ const REVIEWS = [
     prState: "merged",
     date: "2024-09-17",
     tags: ["MoE", "FP8", "Padding", "Config"],
-  },
-  // ROCm/aiter
-  {
-    id: "review-aiter-2360",
-    repo: REPO.AITER,
-    prNumber: 2360,
-    url: "https://github.com/ROCm/aiter/pull/2360",
-    title: "[TRITON] Unified attention FP8 cleanup",
-    prState: "open",
-    date: "2026-03-19",
-    tags: ["Triton", "FP8", "Attention", "Cleanup"],
   },
 ];
 
