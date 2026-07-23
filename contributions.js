@@ -1484,7 +1484,7 @@ const REVIEWS = [
     reviewType: "CHANGES_REQUESTED",
     date: "2026-02-19",
     tags: ["Mamba", "Prefix Caching", "Kernel", "ROCm Compatibility"],
-    description: "Reviewed ROCm compatibility of a Mamba1 prefix caching fix. Identified two unused constexpr declarations (kNThreads, kChunkSize) that are benign on CUDA but cause compilation failures on ROCm. Was independently working on a similar fix at the time. Suggested inline deletions with explanation. Followed up with companion PR #34977.",
+    description: "two unused constexpr declarations that are benign on CUDA but cause compilation failures on ROCm",
     impact: "Ensured Mamba1 prefix caching fix compiled correctly on AMD ROCm — change required before PR could merge",
   },
   {
