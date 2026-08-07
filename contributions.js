@@ -154,6 +154,19 @@ const PROJECTS = [
 const PULL_REQUESTS = [
   // ── 🆕 New PRs auto-added by fetch_contributions.py — review & enrich ──
   {
+    id: "vllm-51273",
+    repo: REPO.VLLM_UPSTREAM,
+    number: 51273,
+    url: "https://github.com/vllm-project/vllm/pull/51273",
+    title: "[ROCm][CI] Update AITER AR+RMS e2e fusion counts for final-norm coverage",
+    state: STATE.MERGED,
+    category: CAT.INFRA,
+    date: "2026-08-06",
+    mergedDate: "2026-08-06",
+    tags: ["ROCm", "CI", "Aiter", "AllReduce", "RMSNorm", "torch.compile"],
+    description: "Restored ROCm e2e fusion CI coverage after a stale assertion started masking final-norm fusion regressions.",
+  },
+  {
     id: "vllm-50905",
     repo: REPO.VLLM_UPSTREAM,
     number: 50905,
