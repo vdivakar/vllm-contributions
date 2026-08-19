@@ -154,6 +154,19 @@ const PROJECTS = [
 const PULL_REQUESTS = [
   // ── 🆕 New PRs auto-added by fetch_contributions.py — review & enrich ──
   {
+    id: "vllm-52208",
+    repo: REPO.VLLM_UPSTREAM,
+    number: 52208,
+    url: "https://github.com/vllm-project/vllm/pull/52208",
+    title: "[ROCm][CI] add Aiter ops tests",
+    state: STATE.MERGED,
+    category: CAT.INFRA,
+    date: "2026-08-13",
+    mergedDate: "2026-08-17",
+    tags: ["ROCm", "CI", "Aiter", "RMSNorm", "FP8", "Testing", "MI355"],
+    description: "Added CI coverage for AITER's fused RMSNorm/quant ops on MI355, catching correctness regressions in ROCm's fused-kernel path before they ship.",
+  },
+  {
     id: "vllm-51273",
     repo: REPO.VLLM_UPSTREAM,
     number: 51273,
