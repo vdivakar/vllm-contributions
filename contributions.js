@@ -154,6 +154,32 @@ const PROJECTS = [
 const PULL_REQUESTS = [
   // ── 🆕 New PRs auto-added by fetch_contributions.py — review & enrich ──
   {
+    id: "vllm-53177",
+    repo: REPO.VLLM_UPSTREAM,
+    number: 53177,
+    url: "https://github.com/vllm-project/vllm/pull/53177",
+    title: "[ROCm][CI] Add float16 dtype and unsupported head size tests for paged attention",
+    state: STATE.MERGED,
+    category: CAT.INFRA,
+    date: "2026-08-21",
+    mergedDate: "2026-08-21",
+    tags: ["ROCm", "CI", "Attention", "Testing"],
+    description: "Closes a gap where an unsupported head size could silently produce wrong attention output on ROCm instead of erroring, and adds fp16 coverage that bf16-only tests were missing.",
+  },
+  {
+    id: "vllm-52854",
+    repo: REPO.VLLM_UPSTREAM,
+    number: 52854,
+    url: "https://github.com/vllm-project/vllm/pull/52854",
+    title: "[ROCm][CI] aiter kernel ops - enable rope test",
+    state: STATE.MERGED,
+    category: CAT.INFRA,
+    date: "2026-08-19",
+    mergedDate: "2026-08-21",
+    tags: ["ROCm", "CI", "Aiter", "RoPE", "Testing"],
+    description: "Fixed a reference-implementation dtype mismatch that was masking real AITER rotary-embedding kernel behavior, letting the previously xfailed rope test run for real.",
+  },
+  {
     id: "vllm-52208",
     repo: REPO.VLLM_UPSTREAM,
     number: 52208,
