@@ -90,7 +90,7 @@ const PROJECTS = [
     id: "proj-ci-health",
     title: "vLLM Upstream CI Health for AMD / ROCm",
     summary: "Drove ROCm CI reliability across the vLLM upstream test suite and the AITER pipeline — restoring failing ROCm test groups to green and improving overall CI stability.",
-    impact: "26+ merged CI/infra PRs upstream; AITER CI build time: 6 hrs → 12 min (30× speedup)",
+    impact: "26+ merged CI/infra PRs upstream",
     tags: ["CI", "ROCm", "Infrastructure", "GitHub Actions"],
     items: [
       { type: "pr", id: "vllm-46658" },
@@ -1401,7 +1401,6 @@ const PULL_REQUESTS = [
     mergedDate: "2025-10-02",
     tags: ["CI", "FP8", "KV-Cache", "Deepseek", "Mixtral", "Testing"],
     description: "Added FP8 KV-cache CI tests for Deepseek and Mixtral to the AITER pipeline as part of CI overhaul.",
-    impact: "Part of the 6 hrs → 12 min CI overhaul",
   },
 
   // ── ROCm/triton ──────────────────────────────────────
@@ -1846,10 +1845,9 @@ const INTERNAL_WORK = [
     id: "int-aiter-ci-overhaul",
     year: 2025,
     month: 9,
-    title: "AITER CI Overhaul: Buildkite → GitHub Actions (6 hrs → 12 min)",
+    title: "AITER CI Overhaul: Buildkite → GitHub Actions",
     category: CAT.INFRA,
     description: "Redesigned AITER CI pipeline from Buildkite to GitHub Actions with parallelized build stages, pre-built Docker caching, and incremental testing. Added Deepseek + FP8 KV cache to the test suite.",
-    impact: "Build time: 6 hours → 12 minutes (30× speedup)",
     tags: ["CI", "GitHub Actions", "Buildkite", "Docker"],
     clients: [],
   },
